@@ -14,15 +14,15 @@ library(tokenizers)
 # markov chain
 library(markovchain)
 
-path_to_messages<-"" # path to messages
-friends_name <- "" ## friends name, according to Messenger
+path_to_messages<-getwd() # path to messages
+friends_name <- "James Eisenhauer" ## friends name, according to Messenger
 
-  
+
 message_files<-list.files(path=path_to_messages,pattern = ".json$")
 rants.array<-c() # initialize rant array
 
 for (i in message_files) { ## Go through all files
-  json_file <- sprintf("%s%s",path_to_messages,i) ### set to path
+  json_file <- sprintf("%s/%s",path_to_messages,i) ### set to path
   json_data <- fromJSON(paste(readLines(json_file, warn=FALSE),collapse = "")) # read in data. ignore EOF errors
   messages.json<-json_data1$messages
   
@@ -43,7 +43,7 @@ rants.array <- rants.df %>% # on this df...
   unlist() # and unlist
 
 
-badchars<-c("Ã°âÿââ¶") # put in bad characters here.
+badchars<-c("ÃÂ°Ã¢Ã¿Ã¢Ã¢Â¶ã°âÿâ‘â8dã¢âš") # put in bad characters here.
 badchars.string<-paste(unlist(strsplit(badchars,split="")),collapse = '|') # build into a string
 rants.array<-rants.array[grep(badchars.string,rants.array,invert = TRUE)] # remove bad strings
 rants.array<-rants.array[grep("u00",rants.array,invert = TRUE)] # remove  emojis
@@ -58,12 +58,11 @@ print(Sys.time()-st)
 
 
 
-rantbot <- function(num = 100, first_word = "i", n = 2) {
+rantbot <- function(num = 100, n = 2) {
   for (i in 1:num) {
-    set.seed(i+100)
+    set.seed(i+1000)
     markovchainSequence(n = n, # generate 2 additional random words
-                        markovchain = rants.markov$estimate,
-                        t0 = tolower(first_word), include.t0 = T) %>% 
+                        markovchain = rants.markov$estimate,include.t0 = F) %>% 
       # joint words
       paste(collapse = " ") %>% # join generated words with space
       # create proper sentence form
@@ -78,13 +77,4 @@ rantbot <- function(num = 100, first_word = "i", n = 2) {
   
 }
 
-rantbot(num= 100, first_word = "iran", n=20)
-
-
-
-# Use Markov chain
-# https://rpubs.com/nabiilahardini/text-generator
-
-# Method 2
-
-# Method 3
+rantbot(num= 100, n=60)
